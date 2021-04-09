@@ -126,22 +126,63 @@ Introduction
 				
 		Remember that parse returns a Result type and Result is an enum that has the variants Ok or Err.
 		
-		
-
-			
-			
-
-		
-
-			
-			
-				
-				
-			
-			
 
 3. Common Programming Concepts
+	Introduction:
+		Keywords:
+			variables \ basic types \ functions \ comments \ control flow
+	Questions:
+		Question 3.1.1
+		We didn't we use [let] keyword here, why? When is that possible?
+		
 	3.1. Variables and Mutability
+		By default variables are immutable.
+			Safety + Concurrency.
+		In Rust, the compiler guarantees that when you state that a value won’t change, it really won’t change.
+		You can make variables mutable by adding [mut] in front of the variable name.
+			In addition to allowing this value to change, mut conveys intent to future readers of the code by indicating that other parts of the code will be changing this variable’s value.
+			
+			fn main() {
+				let mut x = 5;
+				println!("The value of x is: {}", x);
+				x = 6; // Question 3.1.1 <<<
+				println!("The value of x is: {}", x);
+				}
+		
+		Differences Between Variables and Constants:
+			First, you aren’t allowed to use mut with constants. Constants aren’t just immutable by default—they’re always immutable.
+			
+			You declare constants using the const keyword instead of the let keyword.
+			
+			The type of the value must be annotated. // See Next Section [3.2. Data Types].
+			
+			Constants can be declared in any scope, including the global scope, which makes them useful for values that many parts of code need to know about.
+			
+			const MAX_POINTS: u32 = 100_000;
+			
+			Constants are valid for the entire time a program runs, within the scope they were declared in, making them a useful choice for values in your application domain that multiple parts of the program might need to know about, such as the maximum number of points any player of a game is allowed to earn or the speed of light.
+			
+		Shadowing:
+			you can declare a new variable with the same name as a previous variable, and the new variable shadows the previous variable. 
+			
+			fn main() {
+				let x = 5;
+
+				let x = x + 1;
+
+				let x = x * 2;
+
+				println!("The value of x is: {}", x);
+			}
+			
+				// The final value of x is 12.
+			
+			Shadowing is different from marking a variable as mut, because we’ll get a compile-time error if we accidentally try to reassign to this variable without using the let keyword. 
+			
+			Shadowing thus spares us from having to come up with different names, such as spaces_str and spaces_num; instead, we can reuse the simpler spaces name. 
+			
+			
+
 	3.2. Data Types
 	3.3. Functions
 	3.4. Comments
