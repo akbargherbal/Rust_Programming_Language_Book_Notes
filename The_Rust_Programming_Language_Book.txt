@@ -3,33 +3,137 @@ Foreword
 Introduction
 1. Getting Started
 	1.1. Installation
+	
+		Make sure you installed rust-analyzer plugin both in vs code or intelliJ Idea.
+			Very useful for debugging!
+			
 	1.2. Hello, World!
 	1.3. Hello, Cargo!
 2. Programming a Guessing Game
 	Introdution:
-		let \ match \ use \ fn \ mut \ & \ 
-		Generate a random number between 1 - 100.
-			Print a congratulatory message.
+		Keywords:
+			let \ match \ use \ fn \ mut \ & \
 			
-		use std::io;
-			Import Input/Output from the standard library [std]
+		Concepts:
+			crate \ shadowing \ Result type \ ok  \ Err
 			
-		fn main() {}
-			The entry point to the program.
+			expression will result in a value; e.g. 5 or True or Err
+			Statement is the reverse of expression.
 			
-		let mut guess = String::new();
-			let:	Create a variable.
-			let mut guess:	 explicitly declare the variable guess to be mutible.
-			String::new();	A static method; implement method on the class not the instance.
-			The :: syntax in the ::new line indicates that new is an associated function (Agains static mehtod).
+			Statements are instructions that do something, they don’t return a value. Expressions evaluate to a value, they return that value.
 			
-		io::stdin().read_line(&mut guess)
-			& indicates that this argument is a reference.
-				See Chapter 4 to understand references in Rust.
-			.expect("Failed to read line");
-				Handling Potential Failure with the Result Type
-					See Chapters 6 and 9 for more details on errors.
-				If you don’t call expect, the program will compile, but you’ll get a warning.
+			Rust is an expression-oriented language. This means that most things are expressions, and evaluate to some kind of value. However, there are also statements.
+			
+			A function definition is a statement, it does not result in a value. Calling a function is an expression, that expression evaluates to whatever that function call returns.
+			
+			let num = add(4, 1); // expression that returns a value; 5.
+
+			fn add(x: i32, y:i32) -> i32 {
+				x + y
+			} // statement that doesn't evaluate to anything.
+
+
+
+
+		Goal:
+			Generate a random number between 1 - 100.
+				Print a congratulatory message.
+		Tips:
+			cargo doc --open
+				open crate documentation in browser.
+		Questions:
+			Why the current version of the rand crate did not compile; contrary to the old one?
+			
+	use std::io;
+		Import Input/Output from the standard library [std]
+		
+	fn main() {}
+		The entry point to the program.
+		
+	let mut guess = String::new();
+		let:	Create a variable.
+		let mut guess:	 explicitly declare the variable guess to be mutible.
+		String::new();	A static method; implement method on the class not the instance.
+		The :: syntax in the ::new line indicates that new is an associated function (Agains static mehtod).
+		
+	io::stdin().read_line(&mut guess)
+		& indicates that this argument is a reference.
+			See Chapter 4 to understand references in Rust.
+		.expect("Failed to read line");
+			Handling Potential Failure with the Result Type
+				See Chapters 6 and 9 for more details on errors.
+			If you don’t call expect, the program will compile, but you’ll get a warning.
+	
+	Generating a Secret Number
+		through rand crate
+			modify Cargo.toml file to include rand crate as a dependency.
+				under [dependencies]
+
+		use rand::Rng;
+			Rng is a trait. See Chapter 10 for more info.
+		let secret_number = rand::thread_rng().gen_range(1, 101);
+			
+		println!("The secret number is: {}", secret_number);
+		
+	Comparing the Guess to the Secret Number
+		std::cmp::Ordering
+			Ordering is an enum
+			
+		match guess.cmp(&secret_number) {
+			Ordering::Less => println!("Too small!"),
+			Ordering::Greater => println!("Too big!"),
+			Ordering::Equal => println!("You win!"),
+		}
+
+			A match expression is made up of arms.
+				An arm consists of pattern.
+			
+		let guess: u32 = guess.trim().parse().expect("Please type a number!");
+			shadowing: is a solution for converting the type of the variable.
+				in this case it was a String and became an integer.
+				Shadowing lets us reuse the guess variable name rather than forcing us to create two unique variables, such as guess_str and guess for example.
+			trim remove trailing space.
+			parse get the number out of the string.
+			
+			IMPORTANT:
+				Notice we didn't declare the secret_number type; it's the job of the cmp method to infer that.
+			expect:
+				print error mesage.
+			
+			
+	Allowing Multiple Guesses with Looping
+		The loop keyword creates an infinite loop.
+		We’ll add that now to give users more chances at guessing the number:
+		    loop {
+				println!("Please input your guess.");
+
+
+				match guess.cmp(&secret_number) {
+					Ordering::Less => println!("Too small!"),
+					Ordering::Greater => println!("Too big!"),
+					Ordering::Equal => println!("You win!"),
+					
+					    }
+					}
+					
+	Handling Invalid Input
+		Switching from an expect call to a match expression is how you generally move from crashing on an error to handling the error.
+		
+			let guess: u32 = match guess.trim().parse() {
+				Ok(num) => num,
+				Err(_) => continue,
+			};
+				
+		Remember that parse returns a Result type and Result is an enum that has the variants Ok or Err.
+		
+		
+
+			
+			
+
+		
+
+			
 			
 				
 				
