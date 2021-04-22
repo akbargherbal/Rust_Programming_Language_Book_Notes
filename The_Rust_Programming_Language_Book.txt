@@ -3,6 +3,7 @@ Foreword
 Introduction
 1. Getting Started
 	1.1. Installation
+	
 		Make sure you installed rust-analyzer plugin both in vs code or intelliJ Idea.
 			Very useful for debugging!
 			
@@ -29,7 +30,14 @@ Introduction
 
 			fn add(x: i32, y:i32) -> i32 {
 				x + y
-			} // statement that doesn't evaluate to anything.
+			} // Function definition is a statement that doesn't evaluate to anything.
+				On the other hand, calling a function is an expression.
+			
+			let y = 6; // This is a statement.
+			
+			########
+			Expressions do not include ending semicolons. 
+			########
 
 
 
@@ -94,7 +102,7 @@ Introduction
 			trim remove trailing space.
 			parse get the number out of the string.
 			
-			IMPORTANT:
+			** IMPORTANT:
 				Notice we didn't declare the secret_number type; it's the job of the cmp method to infer that.
 			expect:
 				print error mesage.
@@ -135,7 +143,7 @@ Introduction
 		We didn't we use [let] keyword here, why? When is that possible?
 	
 	Concepts:
-		Panic \ Integer Overflow \ 
+		Panic \ Integer Overflow \ Function’s Signature
 		
 	3.1. Variables and Mutability
 		By default variables are immutable.
@@ -292,12 +300,455 @@ Introduction
 				
 
 	3.3. Functions
+		[main] function is the entry point of [many] programs in Rust.
+		
+		functions are declared using [fn] keyword.
+		
+		snake_case convention is used to name functions.
+			
+		fn main() {
+			println!("Hello, world!");
+
+			another_function();
+		}
+
+		fn another_function() {
+			println!("Another function.");
+		}
+		
+		Function definitions in Rust start with fn and have a set of parentheses after the function name.
+		
+		The curly brackets tell the compiler where the function body begins and ends.
+		
+		Rust doesn’t care where you define your functions, only that they’re defined somewhere.
+		
+		Function Parameters:
+			Functions can also be defined to have parameters, which are special variables that are part of a function’s signature.
+			
+			When a function has parameters, you can provide it with concrete values for those parameters.
+				Technically, the concrete values are called arguments.
+				
+			fn main() {
+				another_function(5);
+			}
+
+			fn another_function(x: i32) {
+				println!("The value of x is: {}", x);
+			}
+			
+			##########
+			In function signatures, you must declare the type of each parameter.
+			##########
+			
+		Function Bodies Contain Statements and Expressions:
+			Basic stuff.
+			
+		Functions with Return Values:
+			You can return early from a function by using the return keyword and specifying a value, but most functions return the last expression implicitly.
+			
+			fn main() {
+				let x = plus_one(5);
+
+				println!("The value of x is: {}", x);
+				}
+
+			fn plus_one(x: i32) -> i32 {
+				x + 1
+			}
+
 	3.4. Comments
+		Double Slash // is the basic type of comments.
+			// Double slash can be used on at the beginning of the line or at the end.
+		
 	3.5. Control Flow
+		if expressions:
+			fn main() {
+				let number = 3;
+
+				if number < 5 {
+					println!("condition was true");
+				}
+				else {
+					println!("condition was false");
+				}
+			}
+			
+			Blocks of code associated with the conditions in if expressions are sometimes called arms, just like the arms in match expressions.
+			
+			Optionally, we can also include an else expression.
+			
+			If you don’t provide an else expression and the condition is false, the program will just skip the if block and move on to the next bit of code.
+			
+			It’s also worth noting that the condition in this code must be a bool.
+				Compare that to other programming languages; like python!
+				
+		Handling Multiple Conditions with else if:
+			fn main() {
+				let number = 6;
+
+				if number % 4 == 0 {
+					println!("number is divisible by 4");
+				} 
+				else if number % 3 == 0 {
+					println!("number is divisible by 3");
+				} // This is the condition that will be executed.
+				else if number % 2 == 0 {
+					println!("number is divisible by 2");
+				} 
+				else {
+					println!("number is not divisible by 4, 3, or 2");
+				}
+			}
+			
+			Rust only executes the block for the first true condition, and once it finds one, it doesn’t even check the rest.
+			
+			Using too many else if expressions can clutter your code, so if you have more than one, you might want to refactor your code. Chapter 6 describes a powerful Rust branching construct called match for these cases.
+		
+		Using if in a let Statement:
+			Because if is an expression, we can use it on the right side of a let statement:
+				fn main() {
+					let condition = true;
+					let number = if condition { 5 } else { 6 };
+
+					println!("The value of number is: {}", number);
+				}
+				
+					Remember that blocks of code evaluate to the last expression in them, and numbers by themselves are also expressions.
+					
+			
+
+		Repetition with Loops:
+			Rust has three kinds of loops: 
+				loop
+				while
+				for
+			
+		Returning Values from Loops:
+			Using break expression.
+			fn main() {
+				let mut counter = 0;
+
+				let result = loop {
+					counter += 1;
+
+					if counter == 10 {
+						break counter * 2;
+					}
+				};
+
+				println!("The result is {}", result);
+			}
+
+		Conditional Loops with while:
+			fn main() {
+				let mut number = 3;
+
+				while number != 0 {
+					println!("{}!", number);
+
+					number -= 1;
+				}
+
+				println!("LIFTOFF!!!");
+			}
+		
+		Looping Through a Collection with for:
+		
+			fn main() {
+				let a = [10, 20, 30, 40, 50];
+
+				for element in a.iter() {
+					println!("the value is: {}", element);
+				}
+			}
+
+		
 4. Understanding Ownership
+	Ownership is Rust’s most unique feature, and it enables Rust to make memory safety guarantees without needing a garbage collector. 
+	
+	Also discussed:
+		borrowing \ slices \ memory management \ references \ data races \ mutable references \ lifetime \
+	
 	4.1. What is Ownership?
-	4.2. References and Borrowing
+		Rust’s central feature is ownership. 
+			Straightforward to explain.
+			Yet deep implications.
+		
+		Memory is managed through a system of ownership with a set of rules that the compiler checks at compile time. 
+		
+		Stack vs. Heap:
+			In a systems programming language like Rust, whether a value is on the stack or the heap has more of an effect on how the language behaves and why you have to make certain decisions. 
+			
+			Both the stack and the heap are parts of memory that are available to your code to use at runtime, but they are structured in different ways. 
+			
+			The stack stores values in the order it gets them and removes the values in the opposite order. This is referred to as last in, first out.
+				Stack ... like a stack of plates LIFO.
+			
+				Adding data is called pushing onto the stack, and removing data is called popping off the stack.
+				
+				All data stored on the stack must have a known, fixed size.
+			
+			Data with an unknown size at compile time or a size that might change must be stored on the heap instead.
+			
+			The heap is less organized: when you put data on the heap, you request a certain amount of space. 
+			
+			The memory allocator finds an empty spot in the heap that is big enough, marks it as being in use, and returns a pointer, which is the address of that location. 
+			
+				This process is called allocating on the heap and is sometimes abbreviated as just allocating. 
+				
+			Think of being seated at a restaurant. When you enter, you state the number of people in your group, and the staff finds an empty table that fits everyone and leads you there.
+			
+				 If someone in your group comes late, they can ask where you’ve been seated to find you. [POINTER].
+			
+			Pushing to the stack is faster than allocating on the heap because the allocator never has to search for a place to store new data; that location is always at the top of the stack.
+			
+			Accessing data in the heap is slower than accessing data on the stack because you have to follow a pointer to get there. 
+			
+		Ownership Rules:
+			Each value in Rust has a variable that’s called its owner.
+			There can only be one owner at a time.
+			When the owner goes out of scope, the value will be dropped.
+	
+		Variable Scope:
+			A scope is the range within a program for which an item is valid.
+
+			fn main() {
+				{                      // s is not valid here, it’s not yet declared
+					let s = "hello";   // s is valid from this point forward
+
+					// do stuff with s
+				}                      // this scope is now over, and s is no longer valid
+			}
+			
+			There are two important points in time here:
+				When s comes into scope, it is valid.
+				It remains valid until it goes out of scope.
+				
+				At this point, the relationship between scopes and when variables are valid is similar to that in other programming languages. 
+				
+				Now we’ll build on top of this understanding by introducing the String type.
+			
+		The String Type:
+			String type is allocated on the heap and as such is able to store an amount of text that is unknown to us at compile time.
+			
+			You can create a String from a string literal using the from function, like so:
+			
+			fn main() {
+				let s = String::from("hello");
+			}
+			
+			
+			fn main() {
+				let mut s = String::from("hello");
+
+				s.push_str(", world!"); // push_str() appends a literal to a String
+
+				println!("{}", s); // This will print `hello, world!`
+			}
+			
+			So, what’s the difference here? Why can String be mutated but literals cannot? The difference is how these two types deal with memory.
+			
+		Memory and Allocation:
+			In the case of a string literal, we know the contents at compile time, so the text is hardcoded directly into the final executable.
+			
+			This is why string literals are fast and efficient. But these properties only come from the string literal’s immutability. 
+			
+			With the String type, in order to support a mutable, growable piece of text, we need to allocate an amount of memory on the heap, unknown at compile time, to hold the contents. This means:
+			
+				The memory must be requested from the memory allocator at runtime.
+				
+					That first part is done by us: when we call String::from, its implementation requests the memory it needs. This is pretty much universal in programming languages.
+
+				We need a way of returning this memory to the allocator when we’re done with our String.
+					Rust takes a different path from other programming languages that use Garbage Collector (GC),  the memory is automatically returned once the variable that owns it goes out of scope. Here’s a version of our scope example from Listing 4-1 using a String instead of a string literal:
+
+
+				fn main() {
+					{
+						let s = String::from("hello"); // s is valid from this point forward
+
+						// do stuff with s
+					}                                  // this scope is now over, and s is no
+													   // longer valid
+				}
+
+			When a variable goes out of scope, Rust automatically calls the drop function and cleans up the heap memory for that variable. 
+			
+
+			
+		Ways Variables and Data Interact: Clone
+			If we do want to deeply copy the heap data of the String, not just the stack data, we can use a common method called clone.
+			
+			fn main() {
+				let s1 = String::from("hello");
+				let s2 = s1.clone();
+
+				println!("s1 = {}, s2 = {}", s1, s2);
+			}
+
+			When you see a call to clone, you know that some arbitrary code is being executed and that code may be expensive. It’s a visual indicator that something different is going on.
+			
+		Stack-Only Data: Copy
+			Rust has a special annotation called the Copy trait that we can place on types like integers that are stored on the stack
+			
+		So what types implement the Copy trait? 
+			All the integer types, such as u32.
+			The Boolean type, bool, with values true and false.
+			All the floating point types, such as f64.
+			The character type, char.
+			Tuples, if they only contain types that also implement Copy.
+			
+		Ownership and Functions:
+			For the following code; try printing the value of s and x. Why do we get a compile error when we print s, but not x?
+			
+			fn main() {
+				let s = String::from("hello");  // s comes into scope
+
+				takes_ownership(s);             // s's value moves into the function...
+												// ... and so is no longer valid here
+
+				let x = 5;                      // x comes into scope
+
+				makes_copy(x);                  // x would move into the function,
+												// but i32 is Copy, so it’s okay to still
+												// use x afterward
+
+			} // Here, x goes out of scope, then s. But because s's value was moved, nothing
+			  // special happens.
+
+			fn takes_ownership(some_string: String) { // some_string comes into scope
+				println!("{}", some_string);
+			} // Here, some_string goes out of scope and `drop` is called. The backing
+			  // memory is freed.
+
+			fn makes_copy(some_integer: i32) { // some_integer comes into scope
+				println!("{}", some_integer);
+			} // Here, some_integer goes out of scope. Nothing special happens.
+
+			If we print s we get the following error for s which is of the String type:
+				[value borrowed here after move]
+			But we don't get that error for x which is of the integer type.
+			
+		Return Values and Scope
+			# The motive behind references & borrowing it seems. See the next section.
+
+	4.2. References and Borrowing:
+		& Symbole (Ampersand) denotes references (a pointer in other languages).
+		These ampersands are references, and they allow you to refer to some value without taking ownership of it.
+		
+		fn main() {
+			let s1 = String::from("hello");
+
+			let s2 = &s1;
+
+			println!("s1 = {}, s2 = {}", s1, s2);
+			// s1 is the owner of the data "hello".
+			// s2 is a reference, that referes to / points to the same data.
+		}
+		
+		
+		Note: The opposite of referencing by using & is dereferencing, which is accomplished with the dereference operator, *. We’ll see some uses of the dereference operator in Chapter 8 and discuss details of dereferencing in Chapter 15.
+		
+							& vs * ---- [Referencing (7) vs Dereferencing (8)]
+		fn main() {
+			let s1 = String::from("hello");
+
+			let len = calculate_length(&s1);
+
+			println!("The length of '{}' is {}.", s1, len);
+		}
+
+		fn calculate_length(s: &String) -> usize {
+			s.len()
+		}
+		
+			The &s1 syntax lets us create a reference that refers to the value of s1 but does not own it. 
+			
+			Because it does not own it, the value it points to will not be dropped when the reference goes out of scope.
+			
+			The scope in which the variable s is valid is the same as any function parameter’s scope, but we don’t drop what the reference points to when it goes out of scope because we don’t have ownership.
+			
+			When functions have references as parameters instead of the actual values, we won’t need to return the values in order to give back ownership, because we never had ownership.
+			
+			We call having references as function parameters borrowing.
+			
+			Watch the following video from Garry Explains YT channel:
+				https://youtu.be/79phqVpE7cU
+				
+			Each bit of data, e.g. "hello", has an owner.
+			And, there can be only one.
+		
+		
+			We call having references as function parameters borrowing. As in real life, if a person owns something, you can borrow it from them. When you’re done, you have to give it back.
+			
+			** IMPORTANT:
+			Just as variables are immutable by default, so are references. We’re not allowed to modify something we have a reference to.
+
+
+		Mutable References:
+			Mutable references have one big restriction: you can have only one mutable reference to a particular piece of data in a particular scope. 
+			
+			The benefit of having this restriction is that Rust can prevent data races at compile time. A data race is similar to a race condition and happens when these three behaviors occur:
+
+				*	Two or more pointers access the same data at the same time.
+				*	At least one of the pointers is being used to write to the data.
+				*	There’s no mechanism being used to synchronize access to the data.
+				
+			As always, we can use curly brackets to create a new scope, allowing for multiple mutable references, just not simultaneous ones:
+			
+			fn main() {
+				let mut s = String::from("hello");
+
+				{
+					let r1 = &mut s;
+				} // r1 goes out of scope here, so we can make a new reference with no problems.
+
+				let r2 = &mut s;
+			}
+		
+			We also cannot have a mutable reference while we have an immutable one.
+
+			For instance, this code will compile because the last usage of the immutable references occurs before the mutable reference is introduced:
+				
+				fn main() {
+					let mut s = String::from("hello");
+
+					let r1 = &s; // no problem
+					let r2 = &s; // no problem
+					println!("{} and {}", r1, r2);
+					// r1 and r2 are no longer used after this point
+
+					let r3 = &mut s; // no problem
+					println!("{}", r3);
+				}
+
+				The scopes of the immutable references r1 and r2 end after the println! where they are last used, which is before the mutable reference r3 is created. These scopes don’t overlap, so this code is allowed.
+
+
+		Dangling References:
+			In Rust, by contrast to other low-level languages, the compiler guarantees that references will never be dangling references: if you have a reference to some data, the compiler will ensure that the data will not go out of scope before the reference to the data does.
+
+		The Rules of References:
+			At any given time, you can have either one mutable reference or any number of immutable references.
+			References must always be valid.
+
+		
 	4.3. The Slice Type
+		Slice is a a data type that does not have ownership.
+		Slices let you reference a contiguous sequence of elements in a collection rather than the whole collection.
+		
+		String Slices:
+			A string slice is a reference to part of a String, and it looks like this:
+				fn main() {
+					let s = String::from("hello world");
+
+					let hello = &s[0..5];
+					let world = &s[6..11];
+				}
+
+
+
+		
 5. Using Structs to Structure Related Data
 	5.1. Defining and Instantiating Structs
 	5.2. An Example Program Using Structs
