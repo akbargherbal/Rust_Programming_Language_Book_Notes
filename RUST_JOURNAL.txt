@@ -1,0 +1,9 @@
+1) 	Rust interface is all functions [fn].
+		a)	At least we need one function which is the main function.
+		b)	an example of a function will be:
+				fn main() {
+				code here.
+				}
+2) 	The concept of borrowing / references / ownership is central to Rust.
+3)	The concept of slices ... especially String slices.
+4) 	It goes without saying Rust is a statically-typed language.
