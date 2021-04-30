@@ -750,17 +750,252 @@ Introduction
 
 		
 5. Using Structs to Structure Related Data
+	A struct, or structure, is a custom data type that lets you name and package together multiple related values that make up a meaningful group.
+	
+	If you’re familiar with an object-oriented language, a struct is like an object’s data attributes.
+	
+	Structs and enums (discussed in Chapter 6) are the building blocks for creating new types in your program’s domain to take full advantage of Rust’s compile time type checking.
+
 	5.1. Defining and Instantiating Structs
+		Structs consists of field which should be defined (types).
+		
+		Structs are similar to tuples, which were discussed in Chapter 3. Like tuples, the pieces of a struct can be different types. 
+		
+		Unlike with tuples, you’ll name each piece of data so it’s clear what the values mean.
+		
+		As a result of these names, structs are more flexible than tuples: you don’t have to rely on the order of the data to specify or access the values of an instance.
+		
+		To define a struct, we enter the keyword struct and name the entire struct. 
+		
+		Example:
+			struct User {
+				username: String,
+				email: String,
+				sign_in_count: u64,
+				active: bool,
+			}
+
+			fn main() {}
+			
+		To use a struct after we’ve defined it, we create an instance of that struct by specifying concrete values for each of the fields.
+		
+		Creating Instances From Other Instances With Struct Update Syntax:
+			Using:	[Double Dots ..]
+			The syntax .. specifies that the remaining fields not explicitly set should have the same value as the fields in the given instance.
+
+		Using Tuple Structs without Named Fields to Create Different Types:
+			Tuple Structs just have the types of the fields.
+			
+			Example of tuple struct:
+				fn main() {
+					struct Color(i32, i32, i32);
+					struct Point(i32, i32, i32);
+
+					let black = Color(0, 0, 0);
+					let origin = Point(0, 0, 0);
+					
+					println!("x is = {}", origin.0);
+					println!("green is = {}", black.1);
+				}
+
+			tuple struct instances behave like tuples: you can destructure them into their individual pieces, you can use a . followed by the index to access an individual value, and so on.
+
 	5.2. An Example Program Using Structs
+		A program to calculate the area of a rectangle.
+		
 	5.3. Method Syntax
+		Methods are similar to functions: 
+		they’re declared with the fn keyword and their name, 
+		they can have parameters and a return value, and they contain some code that is run when they’re called from somewhere else.
+			
+		However, methods are different from functions in that they’re defined within the context of a struct (or an enum or a trait object, which we cover in Chapters 6 and 17, respectively), 
+		
+		and their first parameter is always self, which represents the instance of the struct the method is being called on.
+	
+		Defining Methods:
+			To define the function within the context of a struct (Rectangle in this example), we start an impl (implementation) block.
+			
+			Then we move the area function within the impl curly brackets and change the first (and in this case, only) parameter to be self in the signature and everywhere within the body. 
+
+			
+		
+		
 6. Enums and Pattern Matching
+	Keywords:
+		Option \ match \ if let \ generic types <T> \ None \ Some \ 
+	
+	Enums allow you to define a type by enumerating its possible variants. 
+	
 	6.1. Defining an Enum
+		The following code using structs can be expressed using enums:
+		-------------------------------------
+			struct QuitMessage; // unit struct
+			struct MoveMessage {
+				x: i32,
+				y: i32,
+			}
+			struct WriteMessage(String); // tuple struct
+			struct ChangeColorMessage(i32, i32, i32); // tuple struct
+
+			fn main() {}
+		-------------------------------------
+
+		-------------------------------------
+			enum Message {
+				Quit,
+				Move { x: i32, y: i32 },
+				Write(String),
+				ChangeColor(i32, i32, i32),
+			}
+
+			fn main() {}
+		-------------------------------------
+		
+		But if we used the different structs, which each have their own type, we couldn’t as easily define a function to take any of these kinds of messages as we could with the Message enum
+		
+		There is one more similarity between enums and structs: just as we’re able to define methods on structs using impl, we’re also able to define methods on enums. 
+		
+		The Option Enum and Its Advantages Over Null Values:
+			The Option<T> enum is still just a regular enum, and Some(T) and None are still variants of type Option<T>.
+			
+			The <T> syntax is a feature of Rust we haven’t talked about yet. It’s a generic type parameter, and we’ll cover generics in more detail in Chapter 10.
+			
+			Not having to worry about incorrectly assuming a not-null value helps you to be more confident in your code. In order to have a value that can possibly be null, you must explicitly opt in by making the type of that value Option<T>.
+			
+			
 	6.2. The match Control Flow Operator
+		Rust has an extremely powerful control flow operator called match that allows you to compare a value against a series of patterns and then execute code based on which pattern matches. 
+		
+		Patterns can be made up of literal values, variable names, wildcards, and many other things; Chapter 18 covers all the different kinds of patterns and what they do.
+		
+		The power of match comes from the expressiveness of the patterns and the fact that the compiler confirms that all possible cases are handled.
+		
+		Example of match expression combined with enums:
+		-------------------------------------
+			enum Coin {
+				Penny,
+				Nickel,
+				Dime,
+				Quarter,
+			}
+
+			fn value_in_cents(coin: Coin) -> u8 {
+				match coin {
+					Coin::Penny => 1,
+					Coin::Nickel => 5,
+					Coin::Dime => 10,
+					Coin::Quarter => 25,
+				}
+			}
+
+			fn main() {
+				let a = Coin::Dime;
+				let b = value_in_cents(a);
+				println!("b is a {}", b);
+			}
+		-------------------------------------
+		Combining match and enums is useful in many situations. You’ll see this pattern a lot in Rust code: match against an enum, bind a variable to the data inside, and then execute code based on it. It’s a bit tricky at first, but once you get used to it, you’ll wish you had it in all languages. It’s consistently a user favorite.
+
+
+		Matches Are Exhaustive:
+			
+
+		
 	6.3. Concise Control Flow with if let
+		Using if let means less typing, less indentation, and less boilerplate code. However, you lose the exhaustive checking that match enforces.
+		
+		-------------------------------------
+			fn main() {
+				let some_u8_value = Some(0u8);
+				if let Some(3) = some_u8_value {
+					println!("three");
+				}
+			}
+		-------------------------------------
+		
+		Choosing between match and if let depends on what you’re doing in your particular situation and whether gaining conciseness is an appropriate trade-off for losing exhaustive checking.
+		
+		In other words, you can think of if let as syntax sugar for a match that runs code when the value matches one pattern and then ignores all other values.
+
+		We can include an else with an if let. The block of code that goes with the else is the same as the block of code that would go with the _ case in the match expression that is equivalent to the if let and else. 
+	
+	
 7. Managing Growing Projects with Packages, Crates, and Modules
+	Terms:
+		binary crates \ library crate \ external packages \ glob operator \ signatures of functions \ 
+		
+	Keywords:
+		use \ pub \ as \ 
+		
+	As a project grows, you can organize code by splitting it into multiple modules and then multiple files. 
+	
+	A package can contain multiple binary crates and optionally one library crate. 
+	
+	Once you’ve implemented an operation, other code can call that code via the code’s public interface without knowing how the implementation works.
+	
+	The way you write code defines which parts are public for other code to use and which parts are private implementation details that you reserve the right to change. 
+	
+	
 	7.1. Packages and Crates
+		A crate is a binary or library. 
+		
+		A package is one or more crates that provide a set of functionality. A package contains a Cargo.toml file that describes how to build those crates.
+		
+		
+		Several rules determine what a package can contain:
+			 A package must contain zero or one library crates, and no more.
+			 It can contain as many binary crates as you’d like, but it must contain at least one crate (either library or binary).
+			 
 	7.2. Defining Modules to Control Scope and Privacy
+		Modules let us organize code within a crate into groups for readability and easy reuse.
+		
+		Modules also control the privacy of items, which is whether an item can be used by outside code (public) or is an internal implementation detail and not available for outside use (private).
+		
+		Example of a libray in Rust.
+		Restaurant library example that is partitioned among front_of_house and back-side.
+		
+		Filename: src/lib.rs
+		-------------------------------------
+			mod front_of_house {
+				mod hosting {
+					fn add_to_waitlist() {}
+
+					fn seat_at_table() {}
+				}
+
+				mod serving {
+					fn take_order() {}
+
+					fn serve_order() {}
+
+					fn take_payment() {}
+				}
+			}
+		-------------------------------------
+		
+		We define a module by starting with the mod keyword and then specify the name of the module (in this case, front_of_house) and place curly brackets around the body of the module.
+		
+		Inside modules, we can have other modules, as in this case with the modules hosting and serving.
+		
+		Earlier, we mentioned that src/main.rs and src/lib.rs are called crate roots.
+			crate
+			 └── front_of_house
+				 ├── hosting
+				 │   ├── add_to_waitlist
+				 │   └── seat_at_table
+				 └── serving
+					 ├── take_order
+					 ├── serve_order
+					 └── take_payment
+
+		The reason for their name is that the contents of either of these two files form a module named crate at the root of the crate’s module structure, known as the module tree.
+		
+		Notice that the entire module tree is rooted under the implicit module named crate.
+
+		The module tree might remind you of the filesystem’s directory tree on your computer; this is a very apt comparison! Just like directories in a filesystem, you use modules to organize your code. And just like files in a directory, we need a way to find our modules.
+
 	7.3. Paths for Referring to an Item in the Module Tree
+		
 	7.4. Bringing Paths Into Scope with the use Keyword
 	7.5. Separating Modules into Different Files
 8. Common Collections
