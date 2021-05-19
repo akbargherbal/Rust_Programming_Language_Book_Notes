@@ -995,9 +995,149 @@ Introduction
 		The module tree might remind you of the filesystem’s directory tree on your computer; this is a very apt comparison! Just like directories in a filesystem, you use modules to organize your code. And just like files in a directory, we need a way to find our modules.
 
 	7.3. Paths for Referring to an Item in the Module Tree
+		To show Rust where to find an item in a module tree, we use a path in the same way we use a path when navigating a filesystem. If we want to call a function, we need to know its path.
 		
-	7.4. Bringing Paths Into Scope with the use Keyword
+		A path can take two forms:
+			An absolute path starts from a crate root by using a crate name or a literal crate.
+			A relative path starts from the current module and uses self, super, or an identifier in the current module.
+		
+		Both absolute and relative paths are followed by one or more identifiers separated by double colons (::).
+		
+		Modules aren’t useful only for organizing your code. They also define Rust’s privacy boundary: the line that encapsulates the implementation details external code isn’t allowed to know about, call, or rely on. 
+		
+		So, if you want to make an item like a function or struct private, you put it in a module.
+		
+		The way privacy works in Rust is that all items (functions, methods, structs, enums, modules, and constants) are private by default.
+		
+		Items in a parent module can’t use the private items inside child modules, but items in child modules can use the items in their ancestor modules. 
+		
+		Rust chose to have the module system function this way so that hiding inner implementation details is the default. That way, you know which parts of the inner code you can change without breaking outer code.
+		
+		But you can expose inner parts of child modules' code to outer ancestor modules by using the pub keyword to make an item public.
+		
+		Starting Relative Paths with super:
+			We can also construct relative paths that begin in the parent module by using super at the start of the path. This is like starting a filesystem path with the .. syntax. Why would we want to do this?
+			
+			-------------------------------------
+			fn serve_order() {}
+
+			mod back_of_house {
+				fn fix_incorrect_order() {
+					cook_order();
+					super::serve_order();
+				}
+
+				fn cook_order() {}
+			}
+			-------------------------------------
+			The fix_incorrect_order function is in the back_of_house module, so we can use super to go to the parent module of back_of_house, which in this case is crate, the root. 
+			
+			From there, we look for serve_order and find it. Success! 
+			
+			Making Structs and Enums Public:
+				We can also use pub to designate structs and enums as public, but there are a few extra details. If we use pub before a struct definition, we make the struct public, but the struct’s fields will still be private. 
+				
+				We can make each field public or not on a case-by-case basis. In Listing 7-9, we’ve defined a public back_of_house::Breakfast struct with a public toast field but a private seasonal_fruit field. 
+				
+				This models the case in a restaurant where the customer can pick the type of bread that comes with a meal, but the chef decides which fruit accompanies the meal based on what’s in season and in stock. The available fruit changes quickly, so customers can’t choose the fruit or even see which fruit they’ll get.
+				
+				-------------------------------------
+					mod back_of_house {
+						pub struct Breakfast {
+							pub toast: String,
+							seasonal_fruit: String,
+						}
+
+						impl Breakfast {
+							pub fn summer(toast: &str) -> Breakfast {
+								Breakfast {
+									toast: String::from(toast),
+									seasonal_fruit: String::from("peaches"),
+								}
+							}
+						}
+					}
+
+					pub fn eat_at_restaurant() {
+						// Order a breakfast in the summer with Rye toast
+						let mut meal = back_of_house::Breakfast::summer("Rye");
+						// Change our mind about what bread we'd like
+						meal.toast = String::from("Wheat");
+						println!("I'd like {} toast please", meal.toast);
+
+						// The next line won't compile if we uncomment it; we're not allowed
+						// to see or modify the seasonal fruit that comes with the meal
+						// meal.seasonal_fruit = String::from("blueberries");
+					}
+				-------------------------------------
+
+			Enums aren’t very useful unless their variants are public; it would be annoying to have to annotate all enum variants with pub in every case, so the default for enum variants is to be public. Structs are often useful without their fields being public, so struct fields follow the general rule of everything being private by default unless annotated with pub.
+
+		
+	7.4. Bringing Paths Into Scope with the use Keyword:
+		We can bring a path into a scope once and then call the items in that path as if they’re local items with the use keyword.
+		
+		Adding use and a path in a scope is similar to creating a symbolic link in the filesystem.
+		
+		By adding use crate::front_of_house::hosting in the crate root, hosting is now a valid name in that scope, just as though the hosting module had been defined in the crate root.
+		
+		You can also bring an item into scope with use and a relative path. 
+		
+		Creating Idiomatic use Paths:
+			Example:
+				use std::io::Result as IoResult;
+
+			
+			
+		Providing New Names with the as Keyword:
+			There’s another solution to the problem of bringing two types of the same name into the same scope with use: after the path, we can specify as and a new local name, or alias, for the type.
+		
+		Re-exporting Names with pub use:
+			When we bring a name into scope with the use keyword, the name available in the new scope is private. 
+			To enable the code that calls our code to refer to that name as if it had been defined in that code’s scope, we can combine pub and use.
+			This technique is called re-exporting because we’re bringing an item into scope but also making that item available for others to bring into their scope.
+		
+		Using External Packages:
+			Members of the Rust community have made many packages available at crates.io, and pulling any of them into your package involves these same steps:
+				listing them in your package’s Cargo.toml file 
+				and using use to bring items from their crates into scope.
+			
+			Note that the standard library (std) is also a crate that’s external to our package. Because the standard library is shipped with the Rust language, we don’t need to change Cargo.toml to include std.
+			But we do need to refer to it with use to bring items from there into our package’s scope. For example, with HashMap we would use this line:
+				
+			-------------------------------------
+				#![allow(unused)]
+				fn main() {
+				use std::collections::HashMap;
+				}
+			-------------------------------------
+		Using Nested Paths to Clean Up Large use Lists
+			If we’re using multiple items defined in the same crate or same module, 
+			We can use a nested path at any level in a path, which is useful when combining two use statements that share a subpath. 
+			
+		-------------------------------------
+		use std::io;
+		use std::io::Write;
+		-------------------------------------
+		
+		
+		The common part of these two paths is std::io
+		-------------------------------------
+		use std::io::{self, Write};
+		-------------------------------------
+
+		The Glob Operator:
+			If we want to bring all public items defined in a path into scope, we can specify that path followed by *, the glob operator:
+
+		-------------------------------------
+		use std::collections::*;
+		-------------------------------------
+		
+		This use statement brings all public items defined in std::collections into the current scope. Be careful when using the glob operator!
+		The glob operator is often used when testing to bring everything under test into the tests module; we’ll talk about that in the “How to Write Tests” section in Chapter 11.
+
 	7.5. Separating Modules into Different Files
+		
 8. Common Collections
 	8.1. Storing Lists of Values with Vectors
 	8.2. Storing UTF-8 Encoded Text with Strings
