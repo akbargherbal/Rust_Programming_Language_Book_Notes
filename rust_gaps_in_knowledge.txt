@@ -1,0 +1,226 @@
+GAPS IN KNOWLEDGE:
+	Borrowing and moving a vector across functions.
+	
+	Bitwise Operations
+		Bang (!) (NOT)
+		AND (&)
+		OR (|)
+		XOR (^) A & B have to be different.
+		LEFT SHIFT (<<) to the left and insert ZEROS; 
+		RIGHT SHIFT (>>) to the right and insert ZEROS.
+	
+	Short-Circuiting
+		Panic
+			panic!()
+	
+		
+
+
+SOMETHING NEW I LEARNT:
+	SEMICOLON ;
+	
+	Stackoverflow Error.
+		u8 till 255
+	
+	Dividing Two Integers:
+	---------------------------------------
+		fn main() {
+			let x = 3;
+			let y = 4;
+			y = x/y
+			println!("y is {}, y);
+			}
+	---------------------------------------
+	
+	No mixing of types; i.e. integer with float
+	
+	Casting
+		as keyword
+		---------------------------------------
+			fn main(){
+				let a = 13;
+				let b = 2.3;
+				let c = 120;
+
+				let average = (a as f64 + b + c as f64) / 3.0;
+				println!("The average of a, b and c is {}", average);
+				assert_eq!(average, 45.1);
+				println!("Test passed!");
+			}
+		---------------------------------------
+		
+	Formating:
+	---------------------------------------
+		fn main() {
+			let x = 3.0;
+			let y = 4.0;
+			let z = x/y;
+			println!("z is {:.3}", z);
+			println!("z is {:08.3}", z);
+			}
+	---------------------------------------
+	
+		Padding
+		Positional Arguments
+	
+	Short-Circuiting
+	
+	Equality Comparison:
+		true > false
+		
+	char type:
+		4-bytes
+		'👆' == '\u{261D}'
+		
+	Mutibility of Variables:
+	---------------------------------------
+		fn main(){
+			let mut letters = [1, 2, 3, 6, 9];
+			letters[4] = 99; // Notice we didn't use the let keyword.
+			println!("The array now is {:?}", letters);
+
+		}
+	---------------------------------------
+	
+	Declaring a variable without initializing it:
+	---------------------------------------
+		fn main(){
+			let letters: [i32; 6]; 
+			// Notice the colon after the variable name and the simicolon in the square brackets.
+			println!("Hello World");
+
+		}
+	---------------------------------------
+	
+	Array:
+		Populating an array:
+		---------------------------------------
+			fn main(){
+				let letters: [i32; 6]; 
+				// Notice the colon after the variable name and the simicolon in the square brackets.
+				println!("Hello World");
+				letters = [0; 6]; // Notice the simicolon in the square brackets.
+				println!("The array is {:?}", letters);
+			}
+		---------------------------------------	
+	usize:
+		Size is based on number of bytes needed to reference memory.
+			It's used to access index of an array for example.
+			Indexing arrays in Rust doesn't use normal integer types.
+		
+	Multi-Dimensional Arrays
+	---------------------------------------
+		fn main(){
+			let mult_array = [
+							[1, 2, 3], 
+							[10, 20, 30], 
+							[200, 300, 400], 
+							[500, 19, 10]
+							];
+			let random_var = mult_array[2][2];
+			println!("Random variable is {}", random_var);
+			}
+	---------------------------------------
+	
+	Expression being a part of statement:
+		let x = a + b;
+			That is a statement, notice it ends with a simicolon (;).
+			a + b is an expression, it evaluates to give an output.
+			
+	Function Signature:
+	---------------------------------------
+		fn main() {
+			let x = 6;
+			let _y = square(x); // Notice _y to get rid of warning (unused variable).
+
+		}
+	
+		fn square (x:i32) -> i32 {
+			// Notice we don't assign a variable to the return output, just a type.
+			let y = x * x;
+			println!("The square number of {} is {}", x, y);
+			y
+		}
+	---------------------------------------
+	
+	Testing Assertion:
+	---------------------------------------	
+		fn main() {
+			let celsius_temp = 23.0;
+			let fahrenheit_temp = celsius_to_fahrenheit(celsius_temp);
+
+			assert_eq!(fahrenheit_temp, 73.4);
+			println!("Test passed!");
+		}
+
+		fn celsius_to_fahrenheit (c_temp: f64) -> f64 {
+			let f_temp = (c_temp * 1.8) + 32 as f64;
+			f_temp
+		}
+	
+		assert_eq!(value_01, value_02)
+	---------------------------------------
+	
+	break keyword
+		Application:
+			break an infinite loop
+			
+	loop keyword:
+		Application:
+			could be used as an assignment expression
+		---------------------------------------
+			fn main() {
+				let mut count = 0;
+				let result = loop{
+					if count == 10 {
+						break count * 10; // return the final value of count times 10.
+					}
+					count += 10;
+					println!("count is {}", count);
+				};
+
+				println!("After the loop!");
+				println!("result is {}", result);
+			}
+		---------------------------------------
+		
+	Traversing an array using a while loop:
+	---------------------------------------
+		fn main() {
+			let mut count = 0;
+			let letters = ["a", "b", "c", "d"];
+
+			while count < letters.len() {
+				println!("The letter now is {}", letters[count]);
+				count += 1;
+			}
+		}
+	---------------------------------------
+
+	Traversing an array with a for loop:
+	---------------------------------------
+		fn main() {
+			let letters = ["a", "b", "c", "d", "e"];
+			let mut idx = 0;
+
+			for letter in &letters {
+				println!("The letter is now {} with an index of {}", letter, idx);
+				idx +=1;
+			}
+		}
+	---------------------------------------	
+
+Scope in Rust
+	Curly Braces {} define a scope in Rust.
+	Notice that we can access variables going from inner scope to outer scope and not vice versa.
+	
+	---------------------------------------
+		fn main() {
+			let planet = "Earth";
+			if true {
+				println!("The planet is {}", planet);
+			}
+			println!("The planet is {}", planet);
+		}
+	---------------------------------------
+	
