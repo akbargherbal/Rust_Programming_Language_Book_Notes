@@ -13,7 +13,8 @@ GAPS IN KNOWLEDGE:
 		Panic
 			panic!()
 	
-		
+	Vector type ownership and borrowing across functions.
+		See Rust By Example > Chapter: move_semantics/move_semantics2.rs
 
 
 SOMETHING NEW I LEARNT:
@@ -224,3 +225,67 @@ Scope in Rust
 		}
 	---------------------------------------
 	
+What are the differences between  the String type and the String literal?
+	The String type is mutable; unlike the string literal (Think of lists in Python).
+	The String type is stored on the heap; while the String literal is stored on the stack.
+	
+
+Ownership in Rust:
+
+	Why remove data from the heap?
+		To free up memory.
+
+	How?
+		Manually; like the case in C and C++
+			Disadvantages:
+				Memory Leaks.
+		Garbage Collection; like the case in Java.
+			Disadvantages:
+				At the expense of runtime.
+		Ownership; like the case in Rust.
+			Every value is "owned" by one, and only one, variable at a time.
+			When the owning variable goes out of scope, the value is dropped.
+			
+Advantages of the ownership system in Rust:
+	Safety.
+	Efficiency; no garbae collector runs during runtime.
+
+Disadvantages:
+	Learning Curve.
+
+	---------------------------------------
+		fn main() {
+			let outer_planet: String; // Notice initializing without value.
+			{
+				let mut inner_planet = String::from("Mercury");
+				println!("Inner Planet is {}", inner_planet);
+				outer_planet = inner_planet;
+				// Notice outer_planet will take ownership of the value stored on the heap henceforth; 
+				// inner_planet value has been moved to outer_planet (it's now the owner).
+				// The following line will result in a compilation error:
+				println!("Inner Planet is {}", inner_planet);
+			}
+			println!("Outer Planet is {}", outer_planet); 
+			// Notice we managed to get outer_planet value because we it exists in the same scope even if it was not initialized.
+		}
+	---------------------------------------
+
+Transfering ownership across functions:
+	The matter depends on the type of the variable; if it is stored on the stack or the heap.
+	The following example shows rocket_fuel which is of type (i32) kept its original value declared in the main function.
+	Things will be different if rocket_fuel was of type String for example.
+	---------------------------------------
+	fn main() {
+		let rocket_fuel = 1;
+		process_fuel(rocket_fuel);
+		println!("rocket fuel is {}", rocket_fuel);
+		// Notice rocket_fuel kept its value of 1 declared in the main function.
+	}
+
+	fn process_fuel(mut propellant: i32) {
+		propellant += 1;
+		println!("Processing propellant {}", propellant);
+	}
+	---------------------------------------
+
+VIDEO [44. Borrowing references--- [ CourseHulu.com ] ---]
